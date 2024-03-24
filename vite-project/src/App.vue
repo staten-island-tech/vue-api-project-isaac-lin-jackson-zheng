@@ -17,17 +17,24 @@ async function getdatas() {
   taxes.value = data
   console.log(data)
 
-  const tax = data
+  function stringWithCommas() {
+  let stringWithCommas = row.total_taxes;
+let stringWithoutCommas = stringWithCommas.replace(',', '');
+console.log(stringWithoutCommas); 
+  }
+stringWithCommas.log
+
+const tax = data.filter((data) => data.year > 2000 )
 
   const ctx = document.getElementById('taxbar')
   new Chart(ctx, {
     type: 'bar',
     data: {
-      labels: tax.map((row) => row.nm),
+      labels: tax.map((row) => row.year),
       datasets: [
         {
-          label: 'year',
-          data: tax.map((row) => row.cnt),
+          label: 'Total Tax',
+          data: tax.map((row) => row.year),
           borderWidth: 1
         }
       ]
