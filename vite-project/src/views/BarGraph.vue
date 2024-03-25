@@ -1,5 +1,4 @@
 <template>
-  <button id="toggle-data">Change to pie chart</button>
   <div id="graph">
     <canvas id="taxbar"></canvas>
   </div>
