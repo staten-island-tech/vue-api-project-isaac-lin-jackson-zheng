@@ -28,7 +28,7 @@ const tax = data.filter((data) => data.year > 2000 )
 
   const ctx = document.getElementById('taxbar')
   new Chart(ctx, {
-    type: 'bar',
+    type: 'bar',//this line changes the graph type you need to look like you are doing more and not carried by me so just changed it to "doughnut"
     data: {
       labels: tax.map((row) => row.year),
       datasets: [
