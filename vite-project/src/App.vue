@@ -18,13 +18,13 @@ async function getdatas() {
   console.log(data)
 
   function stringWithCommas() {
-  let stringWithCommas = row.total_taxes;
+  let stringWithCommas = row.data;
 let stringWithoutCommas = stringWithCommas.replace(',', '');
 console.log(stringWithoutCommas); 
   }
 stringWithCommas.log
 
-const tax = data.filter((data) => data.year > 2000 )
+const tax = data.filter((data) => data.year > 1999 )
 
   const ctx = document.getElementById('taxbar')
   new Chart(ctx, {
@@ -34,7 +34,7 @@ const tax = data.filter((data) => data.year > 2000 )
       datasets: [
         {
           label: 'Total Tax',
-          data: tax.map((row) => row.year),
+          data: tax.map((row) => row.year),//change the listing for the new value with out the comma with numbers
           borderWidth: 1
         }
       ]
