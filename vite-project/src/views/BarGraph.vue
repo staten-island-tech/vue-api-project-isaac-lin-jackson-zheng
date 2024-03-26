@@ -1,4 +1,11 @@
 <template>
+  <label for="time-period"></label>
+  <select name="time-period" id="select-time">
+    <option min="2009" max="2021">2010s</option>
+    <option min="1999" max="2010">2000s</option>
+    <option min="1989" max="2000">1990s</option>
+    <option min="1979" max="1990">1980s</option>
+  </select>
   <div id="graph">
     <canvas id="taxbar"></canvas>
   </div>
@@ -10,58 +17,71 @@ import { ref, onMounted } from 'vue'
 
 const taxes = ref('')
 
-async function getdatas() {
+async function getData() {
   let response = await fetch('https://data.cityofnewyork.us/resource/hdnu-nbrh.json')
-  let data = await response.json()
-  taxes.value = data
-  console.log(data)
+  let rawData = await response.json()
+  taxes.value = rawData
+  // console.log(rawData)
 
-  const tax = data
+  const convert = string => parseInt(string.replace(/,/g, ''), 10);
+  const data = rawData.map(object => ({
+    ...object,
+    year: convert(object.year),
+    total_taxes: convert(object.total_taxes),
+    commercial_rent: convert(object.commercial_rent),
+    conveyance_of_real_property: convert(object.conveyance_of_real_property),
+    financial_corporation: convert(object.financial_corporation),
+    general_corporation: convert(object.general_corporation),
+    general_sales: convert(object.general_sales),
+    mortgage_recording: convert(object.mortgage_recording),
+    other_taxes: convert(object.other_taxes),
+    personal_income_general_fund_revenue: convert(object.personal_income_general_fund_revenue),
+    personal_income_total: convert(object.personal_income_total),
+    property: convert(object.property),
+    unincorporated_business_income: convert(object.unincorporated_business_income),
+  }));
+  console.log(data);
 
+  let minimum = 2009
+  let maximum = 2021
+  document.getElementById("select-time").addEventListener("change", function() {
+    const selectedOption = this.options[this.selectedIndex];
+    minimum = selectedOption.getAttribute("min");
+    maximum = selectedOption.getAttribute("max");
+    console.log(minimum)
+    console.log(maximum)
+  });
+  
+  const tax = data.filter((data) => data.year > minimum && data.year < maximum)
   const ctx = document.getElementById('taxbar')
   new Chart(ctx, {
     type: 'bar',
     data: {
-      labels: tax.map((row) => row.nm),
+      labels: tax.map((row) => row.year),
       datasets: [
         {
-          label: 'year',
-          data: tax.map((row) => row.cnt),
+          label: 'Total Revenue',
+          data: tax.map((row) => row.total_taxes),
           borderWidth: 1
-          
         }
       ]
     },
     options: {
-      indexAxis: 'y',
+      indexAxis: 'x',
       scales: {
-        y: {
-          beginAtZero: true
-          
+        x: {
+          beginAtZero: true,
+          reverse: true,
         }
       }
     }
   })
 }
-
 onMounted(() => {
-  getdatas()
+  getData()
 })
 </script>
 
 <style scoped>
-  #toggle-data {
-    margin-bottom: 2vw;
-    padding: 10px;
-    background-color: #003884;
-    border-radius: 3px;
-    border-style: none;
-    color: white;
-    font-family: "Arimo", sans-serif;
-    font-size: large;
-    cursor: pointer;
-  }
-  #graph {
-    background-color: white;
-  }
+
 </style>
