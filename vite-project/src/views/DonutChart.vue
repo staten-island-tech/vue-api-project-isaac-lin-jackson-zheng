@@ -1,23 +1,61 @@
 <template>
-  <div>
-    <p>text</p>
+  <div id="graph">
+    <h1>THE IRS</h1>
+    <canvas id="taxbar"></canvas>
   </div>
 </template>
 
 <script setup>
-  import { ref, onMounted } from 'vue'
-  const taxes = ref('')
-  async function getData() {
-    let res = await fetch('https://data.cityofnewyork.us/resource/hdnu-nbrh.json')
-    let data = await res.json()
-    console.log(data)
-    taxes.value = data
-  };
-  onMounted(() => {
-    getData(taxes)
-  });
+import Chart from 'chart.js/auto'
+import { ref, onMounted } from 'vue'
+
+const taxes = ref('')
+
+async function getdatas() {
+  let response = await fetch('https://data.cityofnewyork.us/resource/hdnu-nbrh.json')
+  let data = await response.json()
+  taxes.value = data
+  console.log(data)
+
+  function stringWithCommas() {
+  let stringWithCommas = row.data;
+let stringWithoutCommas = stringWithCommas.replace(',', '');
+console.log(stringWithoutCommas); 
+  }
+stringWithCommas.log
+
+const tax = data.filter((data) => data.year > 1999 )
+
+  const ctx = document.getElementById('taxbar')
+  new Chart(ctx, {
+    type: 'doughnut',//this line changes the graph type you need to look like you are doing more and not carried by me so just changed it to "doughnut"
+    data: {
+      labels: tax.map((row) => row.year),
+      datasets: [
+        {
+          label: 'Total Tax',
+          data: tax.map((row) => row.year),//change the listing for the new value with out the comma with numbers
+          borderWidth: 1
+        }
+      ]
+    },
+    options: {
+      indexAxis: 'y',
+      scales: {
+        y: {
+          beginAtZero: true
+        }
+      }
+    }
+  })
+}
+onMounted(() => {
+  getdatas()
+})
 </script>
 
 <style scoped>
-
+#graph {
+  background-color: white;
+}
 </style>

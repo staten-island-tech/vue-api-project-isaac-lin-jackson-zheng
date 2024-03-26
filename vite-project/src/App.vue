@@ -17,25 +17,31 @@ import { ref, onMounted } from 'vue'
 
 const taxes = ref('')
 
-async function getData() {
+async function getdatas() {
   let response = await fetch('https://data.cityofnewyork.us/resource/hdnu-nbrh.json')
   let data = await response.json()
   taxes.value = data
   console.log(data)
 
-  const tax = data
+  function stringWithCommas() {
+  let stringWithCommas = row.data;
+let stringWithoutCommas = stringWithCommas.replace(',', '');
+console.log(stringWithoutCommas); 
+  }
+stringWithCommas.log
+
+const tax = data.filter((data) => data.year > 1999 )
 
   const ctx = document.getElementById('taxbar')
   new Chart(ctx, {
-    type: 'bar',
+    type: 'bar',//this line changes the graph type you need to look like you are doing more and not carried by me so just changed it to "doughnut"
     data: {
-      labels: tax.map((row) => row.nm),
+      labels: tax.map((row) => row.year),
       datasets: [
         {
-          label: 'year',
-          data: tax.map((row) => row.cnt),
+          label: 'Total Tax',
+          data: tax.map((row) => row.year),//change the listing for the new value with out the comma with numbers
           borderWidth: 1
-          
         }
       ]
     },
@@ -44,7 +50,6 @@ async function getData() {
       scales: {
         y: {
           beginAtZero: true
-          
         }
       }
     }
@@ -52,7 +57,7 @@ async function getData() {
 }
 
 onMounted(() => {
-  getData()
+  getdatas()
 })
 </script>
 
@@ -83,3 +88,65 @@ nav {
   text-decoration: none;
 }
 </style>
+<!-- <template>
+  <div id="graph">
+    <h1>THE IRS</h1>
+    <canvas id="taxbar"></canvas>
+  </div>
+</template>
+
+<script setup>
+import Chart from 'chart.js/auto'
+import { ref, onMounted } from 'vue'
+
+const taxes = ref('')
+
+async function getdatas() {
+  let response = await fetch('https://data.cityofnewyork.us/resource/hdnu-nbrh.json')
+  let data = await response.json()
+  taxes.value = data
+  console.log(data)
+
+  function stringWithCommas() {
+  let stringWithCommas = row.data;
+let stringWithoutCommas = stringWithCommas.replace(',', '');
+console.log(stringWithoutCommas); 
+  }
+stringWithCommas.log
+
+const tax = data.filter((data) => data.year > 1999 )
+
+  const ctx = document.getElementById('taxbar')
+  new Chart(ctx, {
+    type: 'bar',//this line changes the graph type you need to look like you are doing more and not carried by me so just changed it to "doughnut"
+    data: {
+      labels: tax.map((row) => row.year),
+      datasets: [
+        {
+          label: 'Total Tax',
+          data: tax.map((row) => row.year),//change the listing for the new value with out the comma with numbers
+          borderWidth: 1
+        }
+      ]
+    },
+    options: {
+      indexAxis: 'y',
+      scales: {
+        y: {
+          beginAtZero: true
+        }
+      }
+    }
+  })
+}
+onMounted(() => {
+  getdatas()
+})
+</script>
+
+<style scoped>
+#graph {
+  background-color: white;
+}
+</style>
+ -->
