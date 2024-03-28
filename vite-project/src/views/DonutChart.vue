@@ -60,8 +60,8 @@ async function getData() {
       labels: tax.map((row) => row.year),
       datasets: [
         {
-          label: 'Total Revenue',
-          data: tax.map((row) => row.total_taxes),
+          label: 'property Revenue',
+          data: tax.map((row) => row.property),
           borderWidth: 1
         }
       ]

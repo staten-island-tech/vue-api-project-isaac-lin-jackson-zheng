@@ -3,8 +3,8 @@
     <h1>New York City Tax Revenue</h1>
   </div>
   <nav>
-    <RouterLink to="/" class="link">Bar Graph</RouterLink>
-    <RouterLink to="/doughnut" class="link">Doughnut Chart</RouterLink>
+    <RouterLink to="/" class="link">total taxes</RouterLink>
+    <RouterLink to="/doughnut" class="link">propertyTax</RouterLink>
   </nav>
   <div id="data">
     <RouterView/>
