@@ -24,9 +24,7 @@ let selected = ref('')
 const taxes = ref([])
 let chart = null
 
-async function getData() {
-  console.log(options)
-  
+async function getData() {  
   let response = await fetch('https://data.cityofnewyork.us/resource/hdnu-nbrh.json')
   let rawData = await response.json()
   taxes.value = rawData
@@ -49,22 +47,18 @@ async function getData() {
     unincorporated_business_income: convert(object.unincorporated_business_income),
   }));
 
-  // const decade = options.value.find(option => option.value.min === selected.value.min && option.value.max === selected.value.max)
-  // const tax = data.filter(data => data.year >= decade.value.min && data.year <= decade.value.max)
-
   function displayData() {
-    if (selected === undefined) {
+    const ctx = document.getElementById("taxbar")
+    if (!ctx.hasAttribute("style")) {
       const tax = data.filter(data => data.year >= 2010 && data.year <= 2020)
       return tax
-    } else if (selected.selectedIndex !== -1) {
+    } else if (ctx.hasAttribute("style")) {
       const decade = options.value.find(option => option.value.min === selected.value.min && option.value.max === selected.value.max)
       const tax = data.filter(data => data.year >= decade.value.min && data.year <= decade.value.max)
       return tax
     }
   }
   const tax = displayData()
-  console.log(tax)
-  console.log(selected)
 
   if (chart) {
     chart.destroy()
