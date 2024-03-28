@@ -1,32 +1,10 @@
-<template>
-  <label for="time-period">Time Period: </label>
-  <select name="time-period" id="select-time" v-model="selected" @change="getData()">
-    <option v-for="option in options" :value="option.value">{{ option.year }}</option>
-  </select>
-
-  <div id="graph">
-    <canvas id="taxbar"></canvas>
-  </div>
-</template>
-
-<script setup>
 import Chart from 'chart.js/auto'
-import { ref, onMounted } from 'vue'
-import { sortData } from '../stores/sortBarData.js'
+import { ref } from 'vue'
 
-const options = ref([
-  { year: '2010s', value: { min: 2010, max: 2021 } },
-  { year: '2000s', value: { min: 2000, max: 2010 } },
-  { year: '1990s', value: { min: 1990, max: 2000 } },
-  { year: '1980s', value: { min: 1979, max: 1990 } },
-])
-let selected = ref('')
 const taxes = ref([])
 let chart = null
 
-async function getData() {
-  console.log(options)
-  
+export async function sortData() {
   let response = await fetch('https://data.cityofnewyork.us/resource/hdnu-nbrh.json')
   let rawData = await response.json()
   taxes.value = rawData
@@ -49,22 +27,7 @@ async function getData() {
     unincorporated_business_income: convert(object.unincorporated_business_income),
   }));
 
-  // const decade = options.value.find(option => option.value.min === selected.value.min && option.value.max === selected.value.max)
-  // const tax = data.filter(data => data.year >= decade.value.min && data.year <= decade.value.max)
-
-  function displayData() {
-    if (selected === undefined) {
-      const tax = data.filter(data => data.year >= 2010 && data.year <= 2020)
-      return tax
-    } else if (selected.selectedIndex !== -1) {
-      const decade = options.value.find(option => option.value.min === selected.value.min && option.value.max === selected.value.max)
-      const tax = data.filter(data => data.year >= decade.value.min && data.year <= decade.value.max)
-      return tax
-    }
-  }
-  const tax = displayData()
-  console.log(tax)
-  console.log(selected)
+  const tax = data.filter(data => data.year >= 2010 && data.year <= 2021)
 
   if (chart) {
     chart.destroy()
@@ -94,11 +57,3 @@ async function getData() {
     })
   }
 }
-onMounted(() => {
-  getData()
-})
-</script>
-
-<style scoped>
-
-</style>

@@ -6,7 +6,9 @@
     <RouterLink to="/" class="link">Bar Graph</RouterLink>
     <RouterLink to="/doughnut" class="link">Doughnut Chart</RouterLink>
   </nav>
-  <RouterView/>
+  <div id="data">
+    <RouterView/>
+  </div>
 </template>
 
 <script setup>
@@ -38,5 +40,9 @@ nav {
   color: white;
   font-size: larger;
   text-decoration: none;
+}
+#data {
+  margin: auto;
+  width: 75%;
 }
 </style>
