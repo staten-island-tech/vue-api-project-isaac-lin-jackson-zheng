@@ -1,5 +1,5 @@
 <template>
-  <label for="time-period">Time Period: </label>
+  <label for="time-period">Select a decade: </label>
   <select name="time-period" id="select-time" v-model="selected" @change="getData()">
     <option v-for="option in options" :value="option.value">{{ option.year }}</option>
   </select>
@@ -46,8 +46,9 @@ async function getData() {
     unincorporated_business_income: convert(object.unincorporated_business_income),
   }));
 
+  const ctx = document.getElementById('taxbar')
+
   function displayData() {
-    const ctx = document.getElementById("taxbar")
     if (!ctx.hasAttribute("style")) {
       const tax = data.filter(data => data.year >= 2010 && data.year <= 2020)
       return tax
@@ -57,25 +58,26 @@ async function getData() {
       return tax
     }
   }
-  const tax = displayData()
+  const tax = displayData();
+  console.log(tax)
 
   if (chart) {
     chart.destroy()
   }
 
-  const ctx = document.getElementById('taxbar')
   if (ctx) {
     chart = new Chart(ctx, {
       type: 'bar',
       data: {
-        labels: tax.map(row => row.year),
+        labels: tax.map(column => column.year),
         datasets: [{
           label: 'Total Revenue',
-          data: tax.map(row => row.total_taxes),
+          data: tax.map(column => column.total_taxes),
           borderWidth: 1
         }]
       },
       options: {
+        responsive: true,
         indexAxis: 'x',
         scales: {
           x: {
@@ -85,6 +87,9 @@ async function getData() {
         }
       }
     })
+    window.addEventListener('resize', () => {
+      chart.resize();
+    });
   }
 }
 onMounted(() => {
@@ -93,5 +98,13 @@ onMounted(() => {
 </script>
 
 <style scoped>
-
+  label {
+    margin-bottom: 2vw;
+    font-size: larger;
+  }
+  select {
+    margin-bottom: 2vw;
+    padding: 3px;
+    font-size: larger;
+  }
 </style>
