@@ -5,6 +5,7 @@
   <nav>
     <RouterLink to="/" class="link">Total Revenues</RouterLink>
     <RouterLink to="/pie" class="link">Revenue Sources</RouterLink>
+    <RouterLink to="/game" class="link">game</RouterLink>
   </nav>
   <div id="data">
     <RouterView/>
