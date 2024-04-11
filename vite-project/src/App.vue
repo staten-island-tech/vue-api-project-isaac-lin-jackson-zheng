@@ -3,6 +3,7 @@
     <div>
       <router-link class="link" to="/">Home</router-link>
       <router-link class="link" to="/bar">Number of usasges in years</router-link>
+      <router-link class="link" to="/doughnut">DONUTCHART(TEMPNAME)</router-link>
     </div>
   </div>
   <div>
