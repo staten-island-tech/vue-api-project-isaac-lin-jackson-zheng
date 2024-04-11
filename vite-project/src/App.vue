@@ -1,49 +1,85 @@
-<template>
-  <div id="header">
-    <h1>New York City Tax Revenue</h1>
-  </div>
-  <nav>
-    <RouterLink to="/" class="link">Total Revenues</RouterLink>
-    <RouterLink to="/pie" class="link">Revenue Sources</RouterLink>
-  </nav>
-  <div id="data">
-    <RouterView/>
-  </div>
-</template>
-
 <script setup>
-  import { RouterLink, RouterView } from 'vue-router'
+import { RouterLink, RouterView } from 'vue-router'
+import HelloWorld from './components/HelloWorld.vue'
 </script>
 
+<template>
+  <header>
+    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
+
+    <div class="wrapper">
+      <HelloWorld msg="You did it!" />
+
+      <nav>
+        <RouterLink to="/">Home</RouterLink>
+        <RouterLink to="/about">About</RouterLink>
+      </nav>
+    </div>
+  </header>
+
+  <RouterView />
+</template>
+
 <style scoped>
-  #header {
-    margin: 1vw 0px 2vw 0px;
-    padding: 2vw;
+header {
+  line-height: 1.5;
+  max-height: 100vh;
+}
+
+.logo {
+  display: block;
+  margin: 0 auto 2rem;
+}
+
+nav {
+  width: 100%;
+  font-size: 12px;
+  text-align: center;
+  margin-top: 2rem;
+}
+
+nav a.router-link-exact-active {
+  color: var(--color-text);
+}
+
+nav a.router-link-exact-active:hover {
+  background-color: transparent;
+}
+
+nav a {
+  display: inline-block;
+  padding: 0 1rem;
+  border-left: 1px solid var(--color-border);
+}
+
+nav a:first-of-type {
+  border: 0;
+}
+
+@media (min-width: 1024px) {
+  header {
     display: flex;
-    justify-content: center;
-    color: white;
-    background-color: #003884;
-    border: solid #ff6600 thick;
-    border-left-style: none; border-right-style: none;
+    place-items: center;
+    padding-right: calc(var(--section-gap) / 2);
   }
+
+  .logo {
+    margin: 0 2rem 0 0;
+  }
+
+  header .wrapper {
+    display: flex;
+    place-items: flex-start;
+    flex-wrap: wrap;
+  }
+
   nav {
-    display: flex;
-    margin-bottom: 2vw;
-    gap: 10vw;
-    flex-direction: row;
-    justify-content: center;
+    text-align: left;
+    margin-left: -1rem;
+    font-size: 1rem;
+
+    padding: 1rem 0;
+    margin-top: 1rem;
   }
-  .link {
-    padding: 12px;
-    background-color: #003884;
-    border-radius: 3px;
-    color: white;
-    font-size: larger;
-    text-decoration: none;
-  }
-  #data {
-    margin: auto;
-    padding-bottom: 2vw;
-    width: 75%;
-  }
+}
 </style>
