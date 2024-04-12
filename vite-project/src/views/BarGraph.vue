@@ -116,7 +116,7 @@ export default {
       }
     },
   },
-  name: "BarChart",
+  name: "BarGraph",
   components: { Bar },
   props: {},
   async mounted() {

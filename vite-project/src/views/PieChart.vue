@@ -171,7 +171,7 @@ export default {
       }
     }
   },
-  name: "BarChart",
+  name: "PieChart",
   components: { Pie },
   props: {},
   async mounted() {
