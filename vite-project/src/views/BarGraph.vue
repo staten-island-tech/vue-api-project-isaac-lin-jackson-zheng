@@ -16,10 +16,7 @@
 
 <script>
 import { ref } from 'vue'
-
-let selected = ref('')
-const taxes = ref([])
-
+import { Bar } from "vue-chartjs"
 import {
   Chart as ChartJS,
   Title,
@@ -28,8 +25,7 @@ import {
   BarElement,
   CategoryScale,
   LinearScale,
-} from "chart.js";
-import { Bar } from "vue-chartjs";
+} from "chart.js"
 
 ChartJS.register(
   CategoryScale,
@@ -40,25 +36,33 @@ ChartJS.register(
   Legend
 );
 
+let selected = ref('')
+const taxes = ref([])
+
 export default {
   data() {
     return {
       options: [
-        { year: '2010s', value: { min: 2010, max: 2021 } },
+        { year: '2010s', value: { min: 2010, max: 2020 } },
         { year: '2000s', value: { min: 2000, max: 2010 } },
         { year: '1990s', value: { min: 1990, max: 2000 } },
         { year: '1980s', value: { min: 1980, max: 1990 } },
       ],
+      selected: '',
+      taxes: [],
       load: false,
       chartData: null,
       chartOptions: {
         responsive: true,
+        maintainAspectRatio: false,
+        aspectRatio: 1,
       },
     }
   },
   methods: {
     async getData() {
       try {
+        const selected = this.selected
         let response = await fetch('https://data.cityofnewyork.us/resource/hdnu-nbrh.json')
         let rawData = await response.json()
         taxes.value = rawData
@@ -88,8 +92,7 @@ export default {
             const tax = data.filter(data => data.year >= 2010 && data.year <= 2020)
             return tax
           } else if (ctx.children.length >= 1) {
-            const decade = options.value.find(option => option.value.min === selected.value.min && option.value.max === selected.value.max)
-            const tax = data.filter(data => data.year >= decade.value.min && data.year <= decade.value.max)
+            const tax = data.filter(data => data.year >= selected.min && data.year <= selected.max)
             return tax
           }
         }
@@ -101,7 +104,7 @@ export default {
           datasets: [
             {
               label: "Total Revenue",
-              backgroundColor: ["#FF0000"],
+              backgroundColor: ["#a0d0f3"],
               data: tax.map(column => column.total_taxes)
             },
           ],
@@ -111,15 +114,16 @@ export default {
       catch (e) {
         console.log(e);
       }
-    },  
+    },
   },
   name: "BarChart",
   components: { Bar },
   props: {},
   async mounted() {
     this.getData()
+
   },
-};
+}
 </script>
 
 <style scoped>
