@@ -121,7 +121,6 @@ export default {
   props: {},
   async mounted() {
     this.getData()
-
   },
 }
 </script>
