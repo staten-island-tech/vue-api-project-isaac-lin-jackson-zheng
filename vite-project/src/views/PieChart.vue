@@ -1,6 +1,6 @@
 <template>
   <label for="year">Select a year: </label>
-  <select name="year" id="select-year" v-model="selectedOption" @change="getData()">
+  <select name="year" id="select-year" v-model="selected" @change="getData()">
     <option value="2020">2020</option>
     <option value="2019">2019</option>
     <option value="2018">2018</option>
@@ -43,118 +43,138 @@
     <option value="1981">1981</option>
     <option value="1980">1980</option>
   </select>
-  <div id="graph">
-    <canvas id="tax-circle"></canvas>
+  <div id="chart">
+    <Pie
+      v-if="load"
+      id="revenue-sources"
+      :options="chartOptions"
+      :data="chartData"
+    />
   </div>
 </template>
 
-<script setup>
-import Chart from 'chart.js/auto'
-import { ref, onMounted } from 'vue'
+<script>
+import { Pie } from "vue-chartjs";
+import { Chart as ChartJS, Colors, ArcElement, Tooltip, Legend } from "chart.js";
+import { ref } from "vue";
 
-let selectedOption = ref('')
+ChartJS.register(ArcElement, Colors, Tooltip, Legend);
+
+let selected = ref('')
 const taxes = ref('')
-let chart = null
 
-async function getData() {
-  let response = await fetch('https://data.cityofnewyork.us/resource/hdnu-nbrh.json')
-  let rawData = await response.json()
-  taxes.value = rawData
-
-  const convert = string => parseInt(string.replace(/,/g, ''), 10);
-  const data = rawData.map(object => ({
-    ...object,
-    year: convert(object.year),
-    total_taxes: convert(object.total_taxes),
-    commercial_rent: convert(object.commercial_rent),
-    conveyance_of_real_property: convert(object.conveyance_of_real_property),
-    financial_corporation: convert(object.financial_corporation),
-    general_corporation: convert(object.general_corporation),
-    general_sales: convert(object.general_sales),
-    mortgage_recording: convert(object.mortgage_recording),
-    other_taxes: convert(object.other_taxes),
-    personal_income_general_fund_revenue: convert(object.personal_income_general_fund_revenue),
-    personal_income_total: convert(object.personal_income_total),
-    property: convert(object.property),
-    unincorporated_business_income: convert(object.unincorporated_business_income),
-  }));
-
-  const ctx = document.getElementById("tax-circle")
-
-  function displayData() {
-    const selectedYear = parseInt(selectedOption.value)
-    function viewYear(year) {
-      return data.find(object => object.year === year)
-    }
-    let revenueSources = []
-    let dataArray = []
-    if (!ctx.hasAttribute("style")) {
-      const year = 2020
-      const annualData = viewYear(year)
-      console.log(annualData)
-      for (let property in annualData) {
-        if (property !== 'year' && property !== 'total_taxes') {
-          dataArray.push(annualData[property])
-          revenueSources.push(property.replace(/_/g, ' '))
-        }
-      }
-      return [year, revenueSources, dataArray]
-    } else if (ctx.hasAttribute("style")) {
-      const year = selectedOption.value
-      const annualData = viewYear(selectedYear)
-      console.log(annualData)
-      for (let property in annualData) {
-        if (property !== 'year' && property !== 'total_taxes' && property !== 'less_transfers_to_debt_service_funds_and_adjustments') {
-          dataArray.push(annualData[property])
-          revenueSources.push(property.replace(/_/g, ' '))
-        }
-      }
-      return [year, revenueSources, dataArray]
-    }
-  }
-  const preparedData = displayData();
-  const year = preparedData[0]
-  const revenueSources = preparedData[1]
-  const dataArray = preparedData[2]
-
-  if (chart) {
-    chart.destroy()
-  }
-
-  if (ctx) {
-    chart = new Chart(ctx, {
-      type: 'pie',
-      data: {
-        labels: revenueSources,
-        datasets: [
-          {
-            label: 'Revenue',
-            data: dataArray,
-            borderWidth: 1
-          }
-        ]
-      },
-      options: {
+export default {
+  data() {
+    return {
+      selected: '',
+      year: '',
+      taxes: '',
+      load: false,
+      chartData: null,
+      chartOptions: {
         responsive: true,
         plugins: {
-          legend: {
-            position: 'top',
-          },
           title: {
             display: true,
-            text: 'Revenue Sources in ' + year
+            text: 'Revenue Sources in 2020',
+          },
+          colors: {
+            forceOverride: true,
+          },
+        },
+        maintainAspectRatio: false,
+        aspectRatio: 0.5,
+      },
+    };
+  },
+  watch: {
+    selected(year) {
+      this.chartOptions.plugins.title.text = `Revenue Sources in ${year}`;
+    },
+  },
+  methods: {
+    async getData() {
+      try {
+        const selected = this.selected
+        let response = await fetch('https://data.cityofnewyork.us/resource/hdnu-nbrh.json')
+        let rawData = await response.json()
+        taxes.value = rawData
+
+        const convert = string => parseInt(string.replace(/,/g, ''), 10);
+        const data = rawData.map(object => ({
+          ...object,
+          year: convert(object.year),
+          total_taxes: convert(object.total_taxes),
+          commercial_rent: convert(object.commercial_rent),
+          conveyance_of_real_property: convert(object.conveyance_of_real_property),
+          financial_corporation: convert(object.financial_corporation),
+          general_corporation: convert(object.general_corporation),
+          general_sales: convert(object.general_sales),
+          mortgage_recording: convert(object.mortgage_recording),
+          other_taxes: convert(object.other_taxes),
+          personal_income_general_fund_revenue: convert(object.personal_income_general_fund_revenue),
+          personal_income_total: convert(object.personal_income_total),
+          property: convert(object.property),
+          unincorporated_business_income: convert(object.unincorporated_business_income),
+        }));
+
+        function displayData() {
+          const ctx = document.getElementById('chart')
+          const year = parseInt(selected)
+          function viewYear(year) {
+            return data.find(object => object.year === year)
+          }
+          let revenueSources = []
+          let dataArray = []
+          if (ctx.children.length === 0) {
+            const annualData = viewYear(2020)
+            console.log(annualData)
+            for (let property in annualData) {
+              if (property !== 'year' && property !== 'total_taxes' && property !== 'less_transfers_to_debt_service_funds_and_adjustments') {
+                dataArray.push(annualData[property])
+                revenueSources.push(property.replace(/_/g, ' '))
+              }
+            }
+            return [revenueSources, dataArray]
+          } else if (ctx.children.length >= 1) {
+            const annualData = viewYear(year)
+            console.log(annualData)
+            for (let property in annualData) {
+              if (property !== 'year' && property !== 'total_taxes' && property !== 'less_transfers_to_debt_service_funds_and_adjustments') {
+                dataArray.push(annualData[property])
+                revenueSources.push(property.replace(/_/g, ' '))
+              }
+            }
+            return [revenueSources, dataArray]
           }
         }
+        const preparedData = displayData();
+        const revenueSources = preparedData[0]
+        const dataArray = preparedData[1]
+
+        this.chartData = {
+          labels: revenueSources,
+          datasets: [
+            {
+              label: "Revenue",
+              backgroundColor: ["#FF0000"],
+              data: dataArray,
+            },
+          ],
+        };
+        this.load = true;
+      } catch (e) {
+        console.log(e);
       }
-    })
-    window.addEventListener('resize', () => {
-      chart.resize();
-    });
-  }
-}
-onMounted(() => {
-  getData()
-})
+    }
+  },
+  name: "PieChart",
+  components: { Pie },
+  props: {},
+  async mounted() {
+    this.getData()
+  },
+};
 </script>
 
 <style scoped>
