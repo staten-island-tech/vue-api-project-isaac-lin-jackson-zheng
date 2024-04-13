@@ -43,9 +43,6 @@
     <option value="1981">1981</option>
     <option value="1980">1980</option>
   </select>
-  <!-- <div id="graph">
-    <canvas id="tax-circle"></canvas>
-  </div> -->
   <div id="chart">
     <Pie
       v-if="load"
